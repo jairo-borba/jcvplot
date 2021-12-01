@@ -1,4 +1,4 @@
-#include "library.h"
+#include "../include/jcvplot/library.h"
 
 #include <iostream>
 

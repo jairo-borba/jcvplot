@@ -2,7 +2,7 @@
 // Created by Jairo Borba on 11/1/21.
 //
 
-#include "Series.h"
+#include "../include/jcvplot/Series.h"
 namespace jcvplot {
 
     bool Series::setSeriesData(

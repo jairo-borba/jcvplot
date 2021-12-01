@@ -2,7 +2,7 @@
 // Created by Jairo Borba on 10/31/21.
 //
 
-#include "Window.h"
+#include "../include/jcvplot/Window.h"
 
 namespace jcvplot {
     Window::Window(size_t numberOfForms):

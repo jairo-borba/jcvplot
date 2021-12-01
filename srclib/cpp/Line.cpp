@@ -2,7 +2,7 @@
 // Created by Jairo Borba on 11/2/21.
 //
 
-#include "Line.h"
+#include "../include/jcvplot/Line.h"
 namespace jcvplot{
     bool Line::render(cv::Mat &figure) const{
         auto success = true;

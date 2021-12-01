@@ -1,7 +1,7 @@
 //
 // Created by Jairo Borba on 11/21/21.
 //
-#include "Stem.h"
+#include "../include/jcvplot/Stem.h"
 namespace jcvplot{
     bool Stem::render(cv::Mat &figure) const{
         auto success = true;

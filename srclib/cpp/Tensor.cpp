@@ -1,8 +1,8 @@
 //
 // Created by Jairo Borba on 11/23/21.
 //
-#include "Tensor.h"
-#include "Transform2D.h"
+#include "../include/jcvplot/Tensor.h"
+#include "../include/jcvplot/Transform2D.h"
 namespace jcvplot{
     Tensor& Tensor::setData(const Tensor::PixelsPerUnit_t &pixelsPerUnit,
                     const Tensor::StartValue_t &startValue,

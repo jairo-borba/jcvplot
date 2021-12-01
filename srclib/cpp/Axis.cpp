@@ -2,7 +2,7 @@
 // Created by Jairo Borba on 11/6/21.
 //
 
-#include "Axis.h"
+#include "../include/jcvplot/Axis.h"
 #include <cmath>
 namespace jcvplot{
     Axis::Axis():

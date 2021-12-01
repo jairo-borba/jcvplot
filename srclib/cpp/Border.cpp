@@ -2,7 +2,7 @@
 // Created by Jairo Borba on 11/18/21.
 //
 
-#include "Border.h"
+#include "../include/jcvplot/Border.h"
 namespace jcvplot{
     Border::Border():m_thickness(1){
 

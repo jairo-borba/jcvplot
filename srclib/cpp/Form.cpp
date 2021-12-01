@@ -1,7 +1,7 @@
 //
 // Created by Jairo Borba on 10/31/21.
 //
-#include "Form.h"
+#include "../include/jcvplot/Form.h"
 namespace jcvplot{
     void Form::init(int rows, int cols){
         m_rows = rows;

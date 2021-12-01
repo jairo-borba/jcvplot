@@ -1,7 +1,7 @@
 //
 // Created by Jairo Borba on 10/31/21.
 //
-#include "Figure.h"
+#include "../include/jcvplot/Figure.h"
 namespace jcvplot {
     Figure::Figure():
         m_on(true),

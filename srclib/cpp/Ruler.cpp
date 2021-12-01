@@ -1,7 +1,7 @@
 //
 // Created by Jairo Borba on 11/19/21.
 //
-#include "Ruler.h"
+#include "../include/jcvplot/Ruler.h"
 namespace jcvplot{
     Ruler::Ruler():
         m_rightOn(false),
