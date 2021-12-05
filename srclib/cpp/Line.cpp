@@ -13,17 +13,18 @@ namespace jcvplot{
                 firstIteration = false;
                 previousPoint =
                         getTensor()->transformToPixelBaseCoordinate(
-                                cv::Point2d(v.first, v.second),
+                                cv::Point3d(v.first, v.second, 0.0),
                                 figure,
-                                cv::Point2d(0.0,0.0),
                                 axisAngle());
                 continue;
             }
-            cv::Point2d point =
+            auto point =
                     getTensor()->transformToPixelBaseCoordinate(
-                            cv::Point2d(v.first, v.second),
+                            cv::Point3d(
+                                    v.first,
+                                    v.second,
+                                    0.0),
                             figure,
-                            cv::Point2d(0.0,0.0),
                             axisAngle());
             cv::line(
                         figure,

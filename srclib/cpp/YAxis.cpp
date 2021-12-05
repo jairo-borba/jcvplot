@@ -7,22 +7,22 @@ namespace jcvplot{
     }
     bool YAxis::render(cv::Mat &figure) const{
         auto success = true;
+        //auto ninetyDegrees = acos(-1) * 0.1;
+        AxisAngle angle(
+                axisAngle().x_rad(),
+                axisAngle().y_rad(),
+                axisAngle().z_rad());
         cv::Point2d zero =
                 getTensor()->transformToPixelBaseCoordinate(
-                        cv::Point2d(0.0, 0.0),
+                        cv::Point3d(0.0, 0.0, 0.0),
                         figure,
-                        cv::Point2d(0.0,0.0),
-                        axisAngle());
+                        angle);
         cv::Point2d tip =
                 getTensor()->transformToPixelBaseCoordinate(
-                        cv::Point2d(
-                                0.0,
-                                0.9*getTensor()->maxVisibleYValue(
-                                        figure,
-                                        axisAngle())),
+                        cv::Point3d(
+                                0.0,5.0,0.0),
                         figure,
-                        cv::Point2d(0.0,0.0),
-                        axisAngle());
+                        angle);
 
         cv::line(figure,
                  zero,

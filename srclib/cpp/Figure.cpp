@@ -8,7 +8,8 @@ namespace jcvplot {
         m_id("Figure","no-Description"),
         m_color(Figure::Color_t(0,0,0)),
         m_scale(1.0f),
-        m_offset(0,0,0){
+        m_offset(0,0,0),
+        m_axisAngle(){
     }
 
     Figure& Figure::setID(const ID &id){

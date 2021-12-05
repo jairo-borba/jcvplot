@@ -14,30 +14,27 @@ namespace jcvplot{
         //                        figure.rows- getTensor()->bound().lowerRight.y),
         //              this->scalarColor(),m_thickness,0,0);
         cv::Point2d upLeft = tensor()->transformToPixelBaseCoordinate(
-                cv::Point2d(tensor()->minVisibleXValue(),
-                            tensor()->maxVisibleYValue(figure,axisAngle())),
+                cv::Point3d(tensor()->minVisibleXValue(),
+                            tensor()->maxVisibleYValue(figure,axisAngle()),
+                            0.0),
                 figure,
-                cv::Point2d(0.0,0.0),
                 axisAngle());
         cv::Point2d upRight = tensor()->transformToPixelBaseCoordinate(
-                cv::Point2d(tensor()->maxVisibleXValue(figure,axisAngle()),
-                            tensor()->maxVisibleYValue(figure,axisAngle())),
+                cv::Point3d(tensor()->maxVisibleXValue(figure,axisAngle()),
+                            tensor()->maxVisibleYValue(figure,axisAngle()),0.0),
                 figure,
-                cv::Point2d(0.0,0.0),
                 axisAngle());
         cv::Point2d downLeft = tensor()->transformToPixelBaseCoordinate(
-                cv::Point2d(
+                cv::Point3d(
                         tensor()->minVisibleXValue(),
-                        tensor()->minVisibleYValue()),
+                        tensor()->minVisibleYValue(),0.0),
                 figure,
-                cv::Point2d(0.0,0.0),
                 axisAngle());
         cv::Point2d downRight = tensor()->transformToPixelBaseCoordinate(
-                cv::Point2d(
+                cv::Point3d(
                         tensor()->maxVisibleXValue(figure,axisAngle()),
-                        tensor()->minVisibleYValue()),
+                        tensor()->minVisibleYValue(),0.0),
                 figure,
-                cv::Point2d(0.0,0.0),
                 axisAngle());
         cv::line(figure,downLeft,downRight,scalarColor(),m_thickness);
         cv::line(figure,upLeft,upRight,scalarColor(),m_thickness);

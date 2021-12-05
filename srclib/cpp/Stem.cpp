@@ -8,9 +8,8 @@ namespace jcvplot{
         for( auto v : m_series->series()){
             cv::Point2d point =
                     getTensor()->transformToPixelBaseCoordinate(
-                            cv::Point2d(v.first, v.second),
+                            cv::Point3d(v.first, v.second, 0.0),
                             figure,
-                            cv::Point2d(0.0,0.0),
                             axisAngle());
             cv::circle(
                         figure,
@@ -19,8 +18,7 @@ namespace jcvplot{
                         scalarColor());
             auto pointZeroY =
                     getTensor()->transformToPixelBaseCoordinate(
-                            cv::Point2d(v.first, 0.0), figure,
-                            cv::Point2d(0.0,0.0),
+                            cv::Point3d(v.first, 0.0, 0.0), figure,
                             axisAngle());
             cv::line(
                     figure,

@@ -6,13 +6,17 @@ namespace jcvplot {
     void Transform2D::matrixMultiplication(
             double outMtx[2][2],
             double input1Mtx[2][2],
-            double input2Mtx[2][2]){
-        outMtx[0][0] = input1Mtx[0][0] * input2Mtx[0][0] + input1Mtx[0][1] * input2Mtx[1][0];
-        outMtx[0][1] = input1Mtx[0][0] * input2Mtx[0][1] + input1Mtx[0][1] * input2Mtx[1][1];
-        outMtx[1][0] = input1Mtx[1][0] * input2Mtx[0][0] + input1Mtx[1][1] * input2Mtx[1][0];
-        outMtx[1][1] = input1Mtx[1][0] * input2Mtx[0][1] + input1Mtx[1][1] * input2Mtx[1][1];
+            double input2Mtx[2][2]
+    ){
+        for(auto i = 0; i < 2; ++i) {
+            for (auto j = 0; j < 2; ++j) {
+                for (auto k = 0; k < 2; ++k) {
+                    outMtx[i][j] += input1Mtx[i][k] * input2Mtx[k][j];
+                }
+            }
+        }
     }
-        void Transform2D::transform(
+    void Transform2D::transform(
                 const double transformMtx[2][2],
                 const double preOffsetVector[2],
                 const double postOffsetVector[2],

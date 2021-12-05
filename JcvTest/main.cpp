@@ -13,16 +13,16 @@ void setupAxis(
         std::shared_ptr<jcvplot::Figure> axis,
         const jcvplot::AxisAngle &axisAngle){
     axis->setColor(jcvplot::Figure::Color_t(128,0,0));
-    axis->setOffset(jcvplot::Figure::Offset_t(200,250,0));
+    axis->setOffset(jcvplot::Figure::Offset_t(400,250,0));
     axis->setAxisAngle(axisAngle);
     form.addDynamicFigure(axis);
 }
 
 void setTensor2(std::shared_ptr<jcvplot::Tensor> tensor){
     jcvplot::Tensor::Boundaries_t bound{
-            cv::Point2d(80,80),
-            cv::Point2d(80,80)};
-    jcvplot::Tensor::PixelsPerUnit_t pixelsPerUnit{100.0,100.0};
+            cv::Point2d(200,100),
+            cv::Point2d(200,300)};
+    jcvplot::Tensor::PixelsPerUnit_t pixelsPerUnit{50.0,50.0};
     jcvplot::Tensor::StartValue_t startValue{0.0,-2.0};
     jcvplot::Tensor::StepValue_t stepValue{2,0.5};
     tensor->setData(pixelsPerUnit,startValue,stepValue,bound);
@@ -57,7 +57,7 @@ void goSeries(
 }
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    std::cout << "Hello, World - Jcvplot test !" << std::endl;
     jcvplot::Form form;
     std::shared_ptr<jcvplot::XAxis> x_axis = std::make_shared<jcvplot::XAxis>();
     std::shared_ptr<jcvplot::YAxis> y_axis = std::make_shared<jcvplot::YAxis>();
@@ -75,6 +75,8 @@ int main() {
     stem->setTensor(tensor);
     line->setTensor(tensor);
 
+    ruler->enableUp().enableLeft().enableRight().enableBottom();
+
     std::vector<double> xv;
     std::vector<double> yv;
     double x_phase = 0.0;
@@ -82,8 +84,6 @@ int main() {
     series->setSeriesData(xv,yv);
     stem->setSeries(series);
     line->setSeries(series);
-    ruler->enableRight();
-    ruler->enableUp();
     ruler->setColor(
             jcvplot::Figure::Color_t(
                     120,
@@ -105,17 +105,29 @@ int main() {
     form.addDynamicFigure(ruler);
     form.addDynamicFigure(border);
     form.addDynamicFigure(line);
-    setupAxis(form, x_axis,jcvplot::AxisAngle(x_axisAngle,0.0,0.0));
-    setupAxis(form, y_axis,jcvplot::AxisAngle(y_axisAngle+acos(-1)*0.5,0,0.0));
+    setupAxis(form,
+              x_axis,
+              jcvplot::AxisAngle(
+                      0.0,
+                      0.0,
+                      0.0));
+    setupAxis(form,
+              y_axis,
+              jcvplot::AxisAngle(
+                      0.0,
+                      0.0,
+                      0.0));
     form.setColor(jcvplot::Figure::Color_t(200,200,200));
-    form.init(500,1200);
+    form.init(700,1400);
     form.renderAll();
     form.renderDynamic();
     cv::imshow("JCVPlot", form.anime());
     cv::waitKey(0);
-    for(int a = 0; a < 200; a++) {
-        auto x_axisAngle = acos(-1) * 0.001 * static_cast<double>(a);
-        auto y_axisAngle = -acos(-1) * 0.0;
+    auto max = 200;
+    for(int a = 0; a <= max; a++) {
+        auto x_axisAngle = 2.0*acos(-1) * static_cast<double>(a)/static_cast<double>(max);
+        auto y_axisAngle = 2.0*acos(-1) * static_cast<double>(a)/static_cast<double>(max);
+        auto z_axisAngle = y_axisAngle;
         goSeries(xv,yv,0.0,0.01,
                  2*acos(-1), x_phase, sin);
         x_phase += 0.5;
@@ -125,22 +137,23 @@ int main() {
                 jcvplot::AxisAngle(
                         x_axisAngle,
                         y_axisAngle,
-                        0.0)
+                        z_axisAngle)
         );
         border->setAxisAngle(
                 jcvplot::AxisAngle(
                         x_axisAngle,
                         y_axisAngle,
-                        0.0)
+                        z_axisAngle)
         );
-        stem->setAxisAngle(jcvplot::AxisAngle(x_axisAngle,y_axisAngle,0.0));
-        line->setAxisAngle(jcvplot::AxisAngle(x_axisAngle,y_axisAngle,0.0));
-        x_axis->setAxisAngle(jcvplot::AxisAngle(x_axisAngle,0.0,0.0));
-        y_axis->setAxisAngle(jcvplot::AxisAngle(y_axisAngle,0.0,0.0));
-        setTensor3(tensor,10+a/2);
+        stem->setAxisAngle(jcvplot::AxisAngle(x_axisAngle,y_axisAngle,z_axisAngle));
+        line->setAxisAngle(jcvplot::AxisAngle(x_axisAngle,y_axisAngle,z_axisAngle));
+        x_axis->setAxisAngle(jcvplot::AxisAngle(x_axisAngle,y_axisAngle,z_axisAngle));
+        y_axis->setAxisAngle(jcvplot::AxisAngle(x_axisAngle,y_axisAngle,z_axisAngle));
+        //setTensor3(tensor,30.0+static_cast<double>(a)/2.0);
         form.renderDynamic();
         cv::imshow("JCVPlot", form.anime());
-        cv::waitKey(50.0);
+        if( cv::waitKey(50.0) == 'q')
+            break;
     }
     cv::waitKey(0);
     return 0;

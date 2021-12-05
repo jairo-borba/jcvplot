@@ -2,12 +2,13 @@
 // Created by Jairo Borba on 11/23/21.
 //
 #include "../include/jcvplot/Tensor.h"
-#include "../include/jcvplot/Transform2D.h"
+#include "../include/jcvplot/Transform3D.h"
 namespace jcvplot{
-    Tensor& Tensor::setData(const Tensor::PixelsPerUnit_t &pixelsPerUnit,
-                    const Tensor::StartValue_t &startValue,
-                    const Tensor::StepValue_t &stepValue,
-                    const Tensor::Boundaries_t &bound){
+    Tensor& Tensor::setData(
+            const Tensor::PixelsPerUnit_t &pixelsPerUnit,
+            const Tensor::StartValue_t &startValue,
+            const Tensor::StepValue_t &stepValue,
+            const Tensor::Boundaries_t &bound){
         m_startValue = startValue;
         m_pixelsPerUnit.xPixels = pixelsPerUnit.xPixels < 1.0 ? 1.0 : pixelsPerUnit.xPixels;
         m_pixelsPerUnit.yPixels = pixelsPerUnit.yPixels < 1.0 ? 1.0 : pixelsPerUnit.yPixels;
@@ -17,57 +18,90 @@ namespace jcvplot{
         return *this;
     }
     cv::Point2d Tensor::transformToPixelBaseCoordinate(
-            const cv::Point2d &point,
+            const cv::Point3d &point,
             const CvMatShape &shape,
-            const cv::Point2d &offset,
-            const AxisAngle &angleRad) const {
-        //Transform the screen top Y origin to bottom Y origin
-        double yFlipMtx[2][2]{
-            1.0,0.0,
-            0.0,-1.0
+            const AxisAngle &angleRad,
+            const cv::Point3d &offset
+            ) const {
+        //Transform the screen top Y origin
+        // to bottom Y origin
+        double yFlipMtx[3][3]{
+            1.0, 0.0, 0.0,
+            0.0,-1.0, 0.0,
+            0.0, 0.0, 1.0
         };
-        //Transform the representation basis to pixel basis according to the
+        //Transform the representation basis
+        //to pixel basis according to the
         //desired zoom on the graph(scaling)
-        double scaleMtx[2][2]{
-                m_pixelsPerUnit.xPixels, 0.0,
-                0.0, m_pixelsPerUnit.yPixels
+        double scaleMtx[3][3]{
+                m_pixelsPerUnit.xPixels, 0.0, 0.0,
+                0.0, m_pixelsPerUnit.yPixels, 0.0,
+                0.0, 0.0, m_pixelsPerUnit.zPixels
         };
-        double rotation[2][2]{
-            cos(angleRad.x_rad()),-sin(angleRad.y_rad()),
-            sin(angleRad.x_rad()), cos(angleRad.y_rad())
-        };
-        double rotatedMtx[2][2]{0.0,0.0,0.0,0.0};
-        Transform2D::matrixMultiplication(rotatedMtx,scaleMtx,rotation);
-        double transformMtx[2][2]{0.0,0.0,0.0,0.0};
-        Transform2D::matrixMultiplication(transformMtx,yFlipMtx,rotatedMtx);
+        double rotatedMtx0[3][3]
+                {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+        Transform3D::yaw(
+                rotatedMtx0,
+                scaleMtx,angleRad.x_rad(),angleRad.y_rad());
+        double rotatedMtx1[3][3]
+                {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+        Transform3D::roll(
+                rotatedMtx1,
+                rotatedMtx0,angleRad.x_rad(),
+                angleRad.y_rad());
+        double rotatedMtx[3][3]
+                {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+        Transform3D::pitch(
+                rotatedMtx,
+                rotatedMtx1,angleRad.x_rad(),
+                angleRad.y_rad());
+        double transformMtx[3][3]
+        {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+        Transform3D::matrixMultiplication(
+                transformMtx,
+                yFlipMtx,
+                rotatedMtx);
         //Like a camera aiming a region of the graph
-        double preOffsetVector[2]{//Offset on the representation basis
+        double preOffsetVector[3]{//Offset on the representation basis
                 -m_startValue.xStartValue,
                 -m_startValue.yStartValue
+                -m_startValue.zStartValue
         };
-        auto regionHeight { shape.rows() -
-                            m_bound.upperLeft.y - m_bound.lowerRight.y};
+        auto regionHeight{
+            shape.rows() -
+            m_bound.upperLeft.y -
+            m_bound.lowerRight.y};
         //Put the graph on inside the region desired
-        double postOffsetVector[2]{//Offset on the pixel basis
+        double postOffsetVector[3]{//Offset on the pixel basis
                 offset.x + m_bound.upperLeft.x,
-                offset.y + regionHeight + m_bound.upperLeft.y
+                offset.y + regionHeight + m_bound.upperLeft.y,
+                offset.z
         };
         //Values in the representation basis
-        double inputVector[2]{
-                point.x, point.y
+        double inputVector[3]{
+                point.x,
+                point.y,
+                point.z
         };
-        //Values converted from representation basis to pixel basis
-        double outputVector[2]{
-                0.0, 0.0
+        //Values converted from
+        //representation basis
+        // to pixel basis
+        double outputVector[3]{
+                0.0, 0.0, 0.0
         };
         //Transform from representation basis to pixel basis
-        Transform2D::transform(transformMtx,
+        Transform3D::transform(transformMtx,
             preOffsetVector,
             postOffsetVector,
             inputVector,
             outputVector);
-
-        return cv::Point2d(outputVector[0],outputVector[1]);
+        double x3 = 1.0;//350.0 / (abs(outputVector[2])+0.0001);
+        static double max = 0.0;
+        static double min = 0.0;
+        max = outputVector[2] > max ? outputVector[2] : max;
+        min = outputVector[2] < min ? outputVector[2] : min;
+        printf("ZMAX=%lf, ZMIX=%lf, x3=%lf\n",max,min,x3);
+        return cv::Point2d(outputVector[0]*x3,outputVector[1]*x3);
     }
     double Tensor::minVisibleX() const{
         auto min = this->bound().upperLeft.x;

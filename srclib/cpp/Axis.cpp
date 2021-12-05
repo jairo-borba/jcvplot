@@ -20,19 +20,17 @@ namespace jcvplot{
         auto success = true;
         cv::Point2d zero =
                 getTensor()->transformToPixelBaseCoordinate(
-                        cv::Point2d(0.0, 0.0),
+                        cv::Point3d(0.0, 0.0, 0.0),
                         image,
-                        cv::Point2d(0.0,0.0),
                         axisAngle());
         cv::Point2d tip =
                 getTensor()->transformToPixelBaseCoordinate(
-                        cv::Point2d(
+                        cv::Point3d(
                                 0.9*getTensor()->maxVisibleYValue(
                                         image,
                                         axisAngle()),
-                                        0.0),
+                                        0.0, 0.0),
                         image,
-                        cv::Point2d(0.0,0.0),
                         axisAngle());
 
         cv::line(image,

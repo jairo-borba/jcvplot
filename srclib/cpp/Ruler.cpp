@@ -48,9 +48,8 @@ namespace jcvplot{
         for(auto x : listX){
             cv::Point2d startPoint =
                     tensor()->transformToPixelBaseCoordinate(
-                            cv::Point2d(x, tensor()->minVisibleYValue()),
+                            cv::Point3d(x, tensor()->minVisibleYValue(),0.0),
                             figure,
-                            cv::Point2d(0.0,0.0),
                             axisAngle());
             std::ostringstream number;
             number << x;
@@ -61,13 +60,17 @@ namespace jcvplot{
             if(m_upOn) {
                 cv::Point2d upPoint =
                         tensor()->transformToPixelBaseCoordinate(
-                                cv::Point2d(x,
+                                cv::Point3d(x,
                                             tensor()->maxVisibleYValue(
                                                     figure,
-                                                    axisAngle())),
+                                                    axisAngle()),0.0),
                                 figure,
-                                cv::Point2d(-cos(axisAngle().x_rad())*txtSize.width/2, -txtSize.height),
-                                axisAngle());
+                                axisAngle(),
+                                cv::Point3d(
+                                        -cos(axisAngle().x_rad())*txtSize.width/2,
+                                        -txtSize.height,
+                                        0.0)
+                                );
 
                 cv::putText(figure,
                             number.str(),
@@ -94,11 +97,11 @@ namespace jcvplot{
 
                 cv::Point2d endPoint =
                         tensor()->transformToPixelBaseCoordinate(
-                                cv::Point2d(
+                                cv::Point3d(
                                         x,
-                                        tensor()->maxVisibleYValue(figure,axisAngle())),
+                                        tensor()->maxVisibleYValue(figure,axisAngle()),
+                                        0.0),
                                 figure,
-                                cv::Point2d(0.0,0.0),
                                 axisAngle());
                 cv::line(figure,
                          startPoint,
@@ -109,9 +112,8 @@ namespace jcvplot{
         for(auto y : listY){
             cv::Point2d startPoint =
                     tensor()->transformToPixelBaseCoordinate(
-                            cv::Point2d(tensor()->minVisibleXValue(), y),
+                            cv::Point3d(tensor()->minVisibleXValue(), y, 0.0),
                             figure,
-                            cv::Point2d(0.0,0.0),
                             axisAngle());
             std::ostringstream number;
             number << y;
@@ -133,8 +135,10 @@ namespace jcvplot{
             if(m_rightOn) {
                 cv::Point2d txtForwardToRight =
                         tensor()->transformToPixelBaseCoordinate(
-                                cv::Point2d(tensor()->maxVisibleXValue(figure,axisAngle()), y),
-                                figure, cv::Point2d(6.0, 0),axisAngle());
+                                cv::Point3d(
+                                        tensor()->maxVisibleXValue(figure,axisAngle()),
+                                                                   y,0.0),
+                figure, axisAngle(), cv::Point3d(6.0, 0,0.0));
                 cv::putText(figure,
                             number.str(),
                             txtForwardToRight,
@@ -145,10 +149,12 @@ namespace jcvplot{
             if(m_horizontalGridOn) {
                 cv::Point2d endPoint =
                         tensor()->transformToPixelBaseCoordinate(
-                                cv::Point2d(tensor()->maxVisibleXValue(figure,axisAngle()), y),
+                                cv::Point3d(
+                                        tensor()->maxVisibleXValue(figure,axisAngle()),
+                                        y,0.0),
                                 figure,
-                                cv::Point2d(0.0,0.0),
-                                axisAngle());
+                axisAngle(),cv::Point3d(0.0,0.0,0.0)
+                                );
                 cv::line(figure,
                          startPoint,
                          endPoint,

@@ -25,27 +25,42 @@ namespace jcvplot {
         };
         class PixelsPerUnit_t{
         public:
-            PixelsPerUnit_t(double a_xPixels = 1.0, double a_yPixels = 1.0):
+            PixelsPerUnit_t(
+                    double a_xPixels = 1.0,
+                    double a_yPixels = 1.0,
+                    double a_zPixels = 1.0):
                     xPixels(a_xPixels),
-                    yPixels(a_yPixels){}
+                    yPixels(a_yPixels),
+                    zPixels(a_zPixels){}
             double xPixels;
             double yPixels;
+            double zPixels;
         };
         class StartValue_t{
         public:
-            StartValue_t(double a_xStartValue = 0.0, double a_yStartValue = 0.0):
+            StartValue_t(
+                    double a_xStartValue = 0.0,
+                    double a_yStartValue = 0.0,
+                    double a_zStartValue = 0.0):
                     xStartValue(a_xStartValue),
-                    yStartValue(a_yStartValue){}
+                    yStartValue(a_yStartValue),
+                    zStartValue(a_zStartValue){}
             double xStartValue;
             double yStartValue;
+            double zStartValue;
         };
         class StepValue_t{
         public:
-            StepValue_t(double a_xStepValue = 0.0, double a_yStepValue = 0.0):
+            StepValue_t(
+                    double a_xStepValue = 0.0,
+                    double a_yStepValue = 0.0,
+                    double a_zStepValue = 0.0):
                     xStepValue(a_xStepValue),
-                    yStepValue(a_yStepValue){}
+                    yStepValue(a_yStepValue),
+                    zStepValue(a_zStepValue){}
             double xStepValue;
             double yStepValue;
+            double zStepValue;
         };
         class CvMatShape{
             int m_rows;
@@ -76,10 +91,11 @@ namespace jcvplot {
                         const StepValue_t &stepValue,
                         const Boundaries_t &bound);
         cv::Point2d transformToPixelBaseCoordinate(
-                const cv::Point2d &point,
+                const cv::Point3d &point,
                 const CvMatShape &shape,
-                const cv::Point2d &offset = cv::Point2d(0.0, 0.0),
-                const AxisAngle &angleRad = AxisAngle(0.0,0.0)) const;
+                const AxisAngle &angleRad = AxisAngle(),
+                const cv::Point3d &offset = cv::Point3d(0.0, 0.0, 0.0)
+                ) const;
         void genEvenYValues(std::list<double> &points, const CvMatShape &shape)const;
         void genEvenXValues(std::list<double> &points, const CvMatShape &shape)const;
         double minVisibleXValue() const;

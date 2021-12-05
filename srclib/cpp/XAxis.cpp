@@ -11,19 +11,15 @@ namespace jcvplot{
         auto success = true;
         cv::Point2d zero =
                 getTensor()->transformToPixelBaseCoordinate(
-                        cv::Point2d(0.0, 0.0),
+                        cv::Point3d(0.0, 0.0, 0.0),
                         figure,
-                        cv::Point2d(0.0,0.0),
                         axisAngle());
         cv::Point2d tip =
                 getTensor()->transformToPixelBaseCoordinate(
-                        cv::Point2d(
-                                0.9*getTensor()->maxVisibleXValue(
-                                        figure,
-                                        axisAngle()),
-                                0.0),
+                        cv::Point3d(
+                                0.9*getTensor()->maxVisibleXValue(figure,
+                                        axisAngle()),0.0,0.0),
                         figure,
-                        cv::Point2d(0.0,0.0),
                         axisAngle());
 
         cv::line(figure,
