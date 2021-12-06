@@ -20,20 +20,11 @@ void setupAxis(
 
 void setTensor2(std::shared_ptr<jcvplot::Tensor> tensor){
     jcvplot::Tensor::Boundaries_t bound{
-            cv::Point2d(200,100),
-            cv::Point2d(200,300)};
+            cv::Point2d(100,50),
+            cv::Point2d(100,50)};
     jcvplot::Tensor::PixelsPerUnit_t pixelsPerUnit{50.0,50.0};
     jcvplot::Tensor::StartValue_t startValue{0.0,-2.0};
-    jcvplot::Tensor::StepValue_t stepValue{2,0.5};
-    tensor->setData(pixelsPerUnit,startValue,stepValue,bound);
-}
-void setTensor3(std::shared_ptr<jcvplot::Tensor> tensor, double pxPerUnit){
-    jcvplot::Tensor::Boundaries_t bound{
-            cv::Point2d(80,80),
-            cv::Point2d(80,80)};
-    jcvplot::Tensor::PixelsPerUnit_t pixelsPerUnit{pxPerUnit,pxPerUnit};
-    jcvplot::Tensor::StartValue_t startValue{0.0,-2.0};
-    jcvplot::Tensor::StepValue_t stepValue{2,0.5};
+    jcvplot::Tensor::StepValue_t stepValue{2,2};
     tensor->setData(pixelsPerUnit,startValue,stepValue,bound);
 }
 void goSeries(
@@ -125,9 +116,10 @@ int main() {
     cv::waitKey(0);
     auto max = 200;
     for(int a = 0; a <= max; a++) {
-        auto x_axisAngle = 2.0*acos(-1) * static_cast<double>(a)/static_cast<double>(max);
-        auto y_axisAngle = 2.0*acos(-1) * static_cast<double>(a)/static_cast<double>(max);
+        auto x_axisAngle = 0.25*acos(-1) * static_cast<double>(a)/static_cast<double>(max);
+        auto y_axisAngle = 0.25*acos(-1) * static_cast<double>(a)/static_cast<double>(max);
         auto z_axisAngle = y_axisAngle;
+        printf("x_axisAngle=%lf\n", x_axisAngle);
         goSeries(xv,yv,0.0,0.01,
                  2*acos(-1), x_phase, sin);
         x_phase += 0.5;

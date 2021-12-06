@@ -14,7 +14,6 @@ namespace jcvplot {
     public:
         Ruler();
         bool render(cv::Mat &figure) const override;
-        bool renderLegacy(cv::Mat &figure) const;
         Ruler& enableUp(bool up = true);
         Ruler& enableBottom(bool bottom = true);
         Ruler& enableLeft(bool left = true);

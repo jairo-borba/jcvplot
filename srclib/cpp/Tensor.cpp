@@ -40,18 +40,21 @@ namespace jcvplot{
         };
         double rotatedMtx0[3][3]
                 {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-        Transform3D::yaw(
+        Transform3D::roll(
                 rotatedMtx0,
-                scaleMtx,angleRad.x_rad(),angleRad.y_rad());
+                scaleMtx,
+                angleRad.x_rad(),
+                angleRad.y_rad());
         double rotatedMtx1[3][3]
                 {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-        Transform3D::roll(
+        Transform3D::yaw(
                 rotatedMtx1,
-                rotatedMtx0,angleRad.x_rad(),
-                angleRad.y_rad());
+                rotatedMtx0,
+                -angleRad.x_rad(),
+                -angleRad.y_rad());
         double rotatedMtx[3][3]
                 {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-        Transform3D::pitch(
+        Transform3D::bypass(
                 rotatedMtx,
                 rotatedMtx1,angleRad.x_rad(),
                 angleRad.y_rad());
@@ -81,7 +84,7 @@ namespace jcvplot{
         double inputVector[3]{
                 point.x,
                 point.y,
-                point.z
+                point.z+400.0
         };
         //Values converted from
         //representation basis
@@ -95,12 +98,16 @@ namespace jcvplot{
             postOffsetVector,
             inputVector,
             outputVector);
-        double x3 = 1.0;//350.0 / (abs(outputVector[2])+0.0001);
+        static int prev = 0;
+        double x3 = 100.0 / (abs(outputVector[2])+0.0001);
         static double max = 0.0;
         static double min = 0.0;
         max = outputVector[2] > max ? outputVector[2] : max;
         min = outputVector[2] < min ? outputVector[2] : min;
-        printf("ZMAX=%lf, ZMIX=%lf, x3=%lf\n",max,min,x3);
+        if(prev != (int)x3) {
+            //printf("ZMAX=%lf, ZMIX=%lf, x3=%lf\n", max, min, x3);
+            prev = (int)x3;
+        }
         return cv::Point2d(outputVector[0]*x3,outputVector[1]*x3);
     }
     double Tensor::minVisibleX() const{

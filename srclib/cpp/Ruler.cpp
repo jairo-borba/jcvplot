@@ -152,8 +152,7 @@ namespace jcvplot{
                                 cv::Point3d(
                                         tensor()->maxVisibleXValue(figure,axisAngle()),
                                         y,0.0),
-                                figure,
-                axisAngle(),cv::Point3d(0.0,0.0,0.0)
+                                figure,axisAngle(),cv::Point3d(0.0,0.0,0.0)
                                 );
                 cv::line(figure,
                          startPoint,
@@ -161,92 +160,6 @@ namespace jcvplot{
                          this->scalarColor());
             }
         }
-        return success;
-    }
-    bool Ruler::renderLegacy(cv::Mat &figure) const{
-        auto success = true;
-        auto rowUpperLeftLimit = static_cast<double>(getTensor()->bound().upperLeft.y);
-        auto colUpperLeftLimit = static_cast<double>(getTensor()->bound().upperLeft.x);
-        auto rowLowerRightLimit = static_cast<double>(getTensor()->bound().lowerRight.y);
-        auto colLowerRightLimit = static_cast<double>(getTensor()->bound().lowerRight.x);
-        auto pixelRows = static_cast<double>(figure.rows) - (rowLowerRightLimit + rowUpperLeftLimit);
-        auto pixelCols = static_cast<double>(figure.cols) - (colLowerRightLimit + colUpperLeftLimit);
-        auto stepYPixels = tensor()->pixelsPerUnit().yPixels * tensor()->stepValue().yStepValue;
-        auto stepXPixels = tensor()->pixelsPerUnit().xPixels * tensor()->stepValue().xStepValue;
-        auto pivotY = static_cast<double>(figure.rows) - rowLowerRightLimit;
-        auto pivotX = colUpperLeftLimit;
-        auto numberOfYPoints = static_cast<size_t>(pixelCols / stepYPixels) + 1;
-        auto yPointValue = tensor()->startValue().yStartValue;
-        auto row = pivotY;
-        auto numberOfXPoints = static_cast<size_t>(pixelRows / stepXPixels) + 1;
-        auto xPointValue = tensor()->startValue().xStartValue;
-        auto col = pivotX;
-
-        for( auto idx = 0; idx < numberOfYPoints; idx++ ){
-            std::ostringstream number;
-            number << yPointValue;
-            int back = 4 + (number.str().length() * 11);
-            if(m_leftOn) {
-                cv::putText(figure,
-                            number.str(),
-                            cv::Point2d(colUpperLeftLimit - back, row + 5),
-                            1, 1,
-                            this->scalarColor(),
-                            1);
-            }
-            if(m_rightOn) {
-                cv::putText(figure,
-                            number.str(),
-                            cv::Point2d(
-                                    figure.cols - colLowerRightLimit + 6,
-                                    row + 5),
-                            1,
-                            1,
-                            this->scalarColor(),
-                            1);
-            }
-            if(m_verticalGridOn) {
-                cv::line(figure,
-                         cv::Point2d(colUpperLeftLimit, row),
-                         cv::Point2d(figure.cols - colLowerRightLimit, row),
-                         this->scalarColor());
-            }
-            row -= stepYPixels;
-            yPointValue += tensor()->stepValue().yStepValue;
-        }
-
-        for( auto idx = 0; idx < numberOfXPoints; idx++ ){
-            std::ostringstream number;
-            number << xPointValue;
-            int back = number.str().length() * 6;
-            if(m_bottomOn){
-                cv::putText(figure,
-                            number.str(),
-                            cv::Point2d (
-                                    col-back,
-                                    figure.rows - rowLowerRightLimit + 20),
-                            1, 1,
-                            scalarColor(),
-                            1);
-            }
-            if(m_upOn) {
-                cv::putText(figure,
-                            number.str(),
-                            cv::Point2d(
-                                    col - back,
-                                    rowUpperLeftLimit - 10),
-                            1, 1, this->scalarColor(), 1);
-            }
-            if(m_horizontalGridOn) {
-                cv::line(figure,
-                         cv::Point2d(col, rowUpperLeftLimit),
-                         cv::Point2d(col, figure.rows - rowLowerRightLimit),
-                         this->scalarColor());
-            }
-            col += stepXPixels;
-            xPointValue += tensor()->stepValue().xStepValue;
-        }
-
         return success;
     }
 }
