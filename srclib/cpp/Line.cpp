@@ -7,31 +7,39 @@ namespace jcvplot{
     bool Line::render(cv::Mat &figure) const{
         auto success = true;
         auto firstIteration = true;
+        auto prevRet = false;
         cv::Point2d previousPoint;
         for( auto v : m_series->series()){
             if(firstIteration){
                 firstIteration = false;
-                previousPoint =
-                        getTensor()->transformToPixelBaseCoordinate(
-                                cv::Point3d(v.first, v.second, 0.0),
-                                figure,
-                                axisAngle());
+                prevRet = getTensor()->transformToPixelBaseCoordinate(
+                        previousPoint,
+                        cv::Point3d(v.first, v.second,0.0),
+                        figure,
+                        yawAngle(),
+                        rollAngle(),
+                        pitchAngle());
                 continue;
             }
-            auto point =
-                    getTensor()->transformToPixelBaseCoordinate(
-                            cv::Point3d(
+            cv::Point2d point;
+            auto retPoint = getTensor()->transformToPixelBaseCoordinate(
+                    point,
+                    cv::Point3d(
                                     v.first,
                                     v.second,
                                     0.0),
-                            figure,
-                            axisAngle());
-            cv::line(
+                    figure,
+                    yawAngle(),
+                    rollAngle(),
+                    pitchAngle());
+            if(retPoint && prevRet) {
+                cv::line(
                         figure,
                         previousPoint,
                         point,
                         scalarColor());
                 previousPoint = point;
+            }
         }
         return success;
     }

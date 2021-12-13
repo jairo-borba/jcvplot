@@ -74,6 +74,22 @@ Series.h
 memory
 -
 
+../../srclib/include/jcvplot/MovingX.h
+opencv2/opencv.hpp
+-
+opencv2/imgproc.hpp
+-
+opencv2/core.hpp
+-
+opencv2/imgcodecs.hpp
+-
+Figure.h
+../../srclib/include/jcvplot/Figure.h
+Series.h
+../../srclib/include/jcvplot/Series.h
+memory
+-
+
 ../../srclib/include/jcvplot/Ruler.h
 opencv2/opencv.hpp
 -
@@ -171,6 +187,8 @@ jcvplot/Tensor.h
 /Users/jairoborba/CLionProjects/jcvplot/JcvTest/jcvplot/Tensor.h
 jcvplot/AxisAngle.h
 /Users/jairoborba/CLionProjects/jcvplot/JcvTest/jcvplot/AxisAngle.h
+jcvplot/MovingX.h
+/Users/jairoborba/CLionProjects/jcvplot/JcvTest/jcvplot/MovingX.h
 
 /usr/local/Cellar/opencv/4.5.3_2/include/opencv4/opencv2/calib3d.hpp
 opencv2/core.hpp

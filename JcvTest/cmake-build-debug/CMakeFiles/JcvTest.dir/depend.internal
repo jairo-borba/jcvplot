@@ -8,6 +8,7 @@ CMakeFiles/JcvTest.dir/main.cpp.o
  ../../srclib/include/jcvplot/Form.h
  ../../srclib/include/jcvplot/ID.h
  ../../srclib/include/jcvplot/Line.h
+ ../../srclib/include/jcvplot/MovingX.h
  ../../srclib/include/jcvplot/Ruler.h
  ../../srclib/include/jcvplot/Series.h
  ../../srclib/include/jcvplot/Stem.h

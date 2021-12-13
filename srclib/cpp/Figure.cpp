@@ -4,12 +4,12 @@
 #include "../include/jcvplot/Figure.h"
 namespace jcvplot {
     Figure::Figure():
-        m_on(true),
-        m_id("Figure","no-Description"),
-        m_color(Figure::Color_t(0,0,0)),
-        m_scale(1.0f),
-        m_offset(0,0,0),
-        m_axisAngle(){
+            m_on(true),
+            m_id("Figure","no-Description"),
+            m_color(Figure::Color_t(0,0,0)),
+            m_scale(1.0f),
+            m_offset(0,0,0),
+            m_yawAngle(){
     }
 
     Figure& Figure::setID(const ID &id){
@@ -80,11 +80,25 @@ namespace jcvplot {
     void Figure::setTensor(const std::shared_ptr<Tensor> &mTensor) {
         m_tensor = mTensor;
     }
-    const AxisAngle& Figure::axisAngle()const{
-        return m_axisAngle;
+    const AxisAngle& Figure::yawAngle()const{
+        return m_yawAngle;
     }
-    Figure &Figure::setAxisAngle(const AxisAngle& axisAngle){
-        m_axisAngle = axisAngle;
+    Figure &Figure::setYawAngle(const AxisAngle& yawAngle){
+        m_yawAngle = yawAngle;
+        return *this;
+    }
+    const AxisAngle& Figure::rollAngle()const{
+        return m_rollAngle;
+    }
+    Figure &Figure::setRollAngle(const AxisAngle& rollAngle){
+        m_rollAngle = rollAngle;
+        return *this;
+    }
+    const AxisAngle& Figure::pitchAngle()const{
+        return m_pitchAngle;
+    }
+    Figure &Figure::setPitchAngle(const AxisAngle& pitchAngle){
+        m_pitchAngle = pitchAngle;
         return *this;
     }
 }

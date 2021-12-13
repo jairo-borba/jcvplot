@@ -8,38 +8,51 @@ namespace jcvplot{
 
     }
     bool Border::render(cv::Mat &figure) const{
-        //cv::rectangle(figure,
-        //              cv::Point2d(getTensor()->bound().upperLeft.x, getTensor()->bound().upperLeft.y),
-        //              cv::Point2d(figure.cols- getTensor()->bound().lowerRight.x,
-        //                        figure.rows- getTensor()->bound().lowerRight.y),
-        //              this->scalarColor(),m_thickness,0,0);
-        cv::Point2d upLeft = tensor()->transformToPixelBaseCoordinate(
+        cv::Point2d upLeft;
+        auto ret = tensor()->transformToPixelBaseCoordinate(
+                upLeft,
                 cv::Point3d(tensor()->minVisibleXValue(),
-                            tensor()->maxVisibleYValue(figure,axisAngle()),
-                            0.0),
+                tensor()->maxVisibleYValue(figure, yawAngle()),
+                0.0),
                 figure,
-                axisAngle());
-        cv::Point2d upRight = tensor()->transformToPixelBaseCoordinate(
-                cv::Point3d(tensor()->maxVisibleXValue(figure,axisAngle()),
-                            tensor()->maxVisibleYValue(figure,axisAngle()),0.0),
+                yawAngle(),
+                rollAngle(),
+                pitchAngle());
+        cv::Point2d upRight;
+        ret &= tensor()->transformToPixelBaseCoordinate(
+                upRight,
+                cv::Point3d(tensor()->maxVisibleXValue(figure, yawAngle()),
+                            tensor()->maxVisibleYValue(figure, yawAngle()), 0.0),
                 figure,
-                axisAngle());
-        cv::Point2d downLeft = tensor()->transformToPixelBaseCoordinate(
+                yawAngle(),
+                rollAngle(),
+                pitchAngle());
+        cv::Point2d downLeft;
+        ret &= tensor()->transformToPixelBaseCoordinate(
+                downLeft,
                 cv::Point3d(
                         tensor()->minVisibleXValue(),
                         tensor()->minVisibleYValue(),0.0),
                 figure,
-                axisAngle());
-        cv::Point2d downRight = tensor()->transformToPixelBaseCoordinate(
+                yawAngle(),
+                rollAngle(),
+                pitchAngle());
+        cv::Point2d downRight;
+        ret &= tensor()->transformToPixelBaseCoordinate(
+                downRight,
                 cv::Point3d(
-                        tensor()->maxVisibleXValue(figure,axisAngle()),
-                        tensor()->minVisibleYValue(),0.0),
+                    tensor()->maxVisibleXValue(figure, yawAngle()),
+                    tensor()->minVisibleYValue(),0.0),
                 figure,
-                axisAngle());
-        cv::line(figure,downLeft,downRight,scalarColor(),m_thickness);
-        cv::line(figure,upLeft,upRight,scalarColor(),m_thickness);
-        cv::line(figure,downLeft,upLeft,scalarColor(),m_thickness);
-        cv::line(figure,downRight,upRight,scalarColor(),m_thickness);
+                yawAngle(),
+                rollAngle(),
+                pitchAngle());
+        if(ret) {
+            cv::line(figure, downLeft, downRight, scalarColor(), m_thickness);
+            cv::line(figure, upLeft, upRight, scalarColor(), m_thickness);
+            cv::line(figure, downLeft, upLeft, scalarColor(), m_thickness);
+            cv::line(figure, downRight, upRight, scalarColor(), m_thickness);
+        }
         return true;
     }
     Border& Border::setThickness(int thickness){

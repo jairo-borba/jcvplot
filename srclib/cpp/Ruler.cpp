@@ -45,45 +45,53 @@ namespace jcvplot{
         std::list<double> listY;
         tensor()->genEvenXValues(listX,figure);
         tensor()->genEvenYValues(listY,figure);
+        auto retX = true;
         for(auto x : listX){
-            cv::Point2d startPoint =
-                    tensor()->transformToPixelBaseCoordinate(
-                            cv::Point3d(x, tensor()->minVisibleYValue(),0.0),
-                            figure,
-                            axisAngle());
+            cv::Point2d startPoint;
+            retX &= tensor()->transformToPixelBaseCoordinate(
+                    startPoint,
+                    cv::Point3d(x, tensor()->minVisibleYValue(),0.0),
+                    figure,
+                    yawAngle(),
+                    rollAngle(),
+                    pitchAngle());
             std::ostringstream number;
             number << x;
             int baseline = 0;
             cv::Size txtSize = cv::getTextSize(
                     number.str(), font, fontScale,
                     textThickness, &baseline);
-            if(m_upOn) {
-                cv::Point2d upPoint =
-                        tensor()->transformToPixelBaseCoordinate(
-                                cv::Point3d(x,
-                                            tensor()->maxVisibleYValue(
-                                                    figure,
-                                                    axisAngle()),0.0),
-                                figure,
-                                axisAngle(),
-                                cv::Point3d(
-                                        -cos(axisAngle().x_rad())*txtSize.width/2,
-                                        -txtSize.height,
-                                        0.0)
-                                );
-
-                cv::putText(figure,
-                            number.str(),
-                            upPoint,
-                            font,
-                            fontScale,
-                            this->scalarColor(),
-                            textThickness);
+            if(m_upOn && retX) {
+                cv::Point2d upPoint;
+                retX &= tensor()->transformToPixelBaseCoordinate(
+                        upPoint,
+                        cv::Point3d(x,
+                                    tensor()->maxVisibleYValue(
+                                            figure,
+                                            yawAngle()), 0.0),
+                        figure,
+                        yawAngle(),
+                        rollAngle(),
+                        pitchAngle(),
+                        cv::Point3d(
+                            -cos(yawAngle().x_rad()) * txtSize.width / 2,
+                            -txtSize.height,
+                            0.0)
+                    );
+                if(retX) {
+                    cv::putText(figure,
+                                number.str(),
+                                upPoint,
+                                font,
+                                fontScale,
+                                this->scalarColor(),
+                                textThickness);
+                }
             }
-            if(m_bottomOn) {
+            if(m_bottomOn && retX) {
                 cv::Point2d downPoint =
                         cv::Point2d(
-                                startPoint.x-cos(axisAngle().x_rad())*(txtSize.width/2),
+                                startPoint.x- cos(yawAngle().x_rad()) * (txtSize.width / 2),
                                 startPoint.y + txtSize.height + 8);
                 cv::putText(figure,
                             number.str(),
@@ -93,35 +101,43 @@ namespace jcvplot{
                             this->scalarColor(),
                             textThickness);
             }
-            if(m_verticalGridOn) {
-
-                cv::Point2d endPoint =
-                        tensor()->transformToPixelBaseCoordinate(
-                                cv::Point3d(
-                                        x,
-                                        tensor()->maxVisibleYValue(figure,axisAngle()),
-                                        0.0),
-                                figure,
-                                axisAngle());
-                cv::line(figure,
+            if(m_verticalGridOn && retX) {
+                cv::Point2d endPoint;
+                retX &= tensor()->transformToPixelBaseCoordinate(
+                        endPoint,
+                        cv::Point3d(
+                        x,
+                        tensor()->maxVisibleYValue(figure, yawAngle()),
+                        0.0),
+                        figure,
+                        yawAngle(),
+                        rollAngle(),
+                        pitchAngle());
+                if(retX) {
+                    cv::line(figure,
                          startPoint,
                          endPoint,
                          this->scalarColor());
+                }
             }
         }
+        auto retY = true;
         for(auto y : listY){
-            cv::Point2d startPoint =
-                    tensor()->transformToPixelBaseCoordinate(
-                            cv::Point3d(tensor()->minVisibleXValue(), y, 0.0),
-                            figure,
-                            axisAngle());
+            cv::Point2d startPoint;
+            retY &= tensor()->transformToPixelBaseCoordinate(
+                    startPoint,
+                    cv::Point3d(tensor()->minVisibleXValue(), y, 0.0),
+                    figure,
+                    yawAngle(),
+                    rollAngle(),
+                    pitchAngle());
             std::ostringstream number;
             number << y;
             int baseline = 0;
             cv::Size txtSize = cv::getTextSize(
                     number.str(), font, fontScale,
                     textThickness, &baseline);
-            if(m_leftOn) {
+            if(m_leftOn && retY) {
                 cv::Point2d txtBackToLeft =
                         cv::Point2d(startPoint.x-txtSize.width,
                                   startPoint.y);
@@ -132,32 +148,42 @@ namespace jcvplot{
                             this->scalarColor(),
                             textThickness);
             }
-            if(m_rightOn) {
-                cv::Point2d txtForwardToRight =
-                        tensor()->transformToPixelBaseCoordinate(
-                                cv::Point3d(
-                                        tensor()->maxVisibleXValue(figure,axisAngle()),
-                                                                   y,0.0),
-                figure, axisAngle(), cv::Point3d(6.0, 0,0.0));
-                cv::putText(figure,
-                            number.str(),
-                            txtForwardToRight,
-                            font, fontScale,
-                            this->scalarColor(),
-                            textThickness);
+            if(m_rightOn && retY) {
+                cv::Point2d txtForwardToRight;
+                retY &= tensor()->transformToPixelBaseCoordinate(
+                        txtForwardToRight,
+                        cv::Point3d(tensor()->maxVisibleXValue(figure,yawAngle()),y,0.0),
+                        figure,
+                        yawAngle(),
+                        rollAngle(),
+                        pitchAngle(),
+                        cv::Point3d(6.0, 0,0.0));
+                if(retY) {
+                    cv::putText(figure,
+                                number.str(),
+                                txtForwardToRight,
+                                font, fontScale,
+                                this->scalarColor(),
+                                textThickness);
+                }
             }
-            if(m_horizontalGridOn) {
-                cv::Point2d endPoint =
-                        tensor()->transformToPixelBaseCoordinate(
-                                cv::Point3d(
-                                        tensor()->maxVisibleXValue(figure,axisAngle()),
-                                        y,0.0),
-                                figure,axisAngle(),cv::Point3d(0.0,0.0,0.0)
-                                );
-                cv::line(figure,
-                         startPoint,
-                         endPoint,
-                         this->scalarColor());
+            if(m_horizontalGridOn && retY) {
+                cv::Point2d endPoint;
+                retY &= tensor()->transformToPixelBaseCoordinate(
+                        endPoint,
+                        cv::Point3d(
+                                tensor()->maxVisibleXValue(figure, yawAngle()),
+                                y,0.0),
+                        figure, yawAngle(),
+                        rollAngle(),
+                        pitchAngle());
+                if(retY) {
+                    cv::line(
+                            figure,
+                            startPoint,
+                            endPoint,
+                            this->scalarColor());
+                }
             }
         }
         return success;

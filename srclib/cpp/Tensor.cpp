@@ -17,10 +17,13 @@ namespace jcvplot{
         m_bound = bound;
         return *this;
     }
-    cv::Point2d Tensor::transformToPixelBaseCoordinate(
+    bool Tensor::transformToPixelBaseCoordinate(
+            cv::Point2d &outPoint,
             const cv::Point3d &point,
             const CvMatShape &shape,
-            const AxisAngle &angleRad,
+            const AxisAngle &yawAngleRad,
+            const AxisAngle &rollAngleRad,
+            const AxisAngle &pitchAngleRad,
             const cv::Point3d &offset
             ) const {
         //Transform the screen top Y origin
@@ -40,24 +43,25 @@ namespace jcvplot{
         };
         double rotatedMtx0[3][3]
                 {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-        Transform3D::roll(
+        Transform3D::yaw(
                 rotatedMtx0,
                 scaleMtx,
-                angleRad.x_rad(),
-                angleRad.y_rad());
+                yawAngleRad.x_rad(),
+                yawAngleRad.y_rad());
         double rotatedMtx1[3][3]
                 {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-        Transform3D::yaw(
+        Transform3D::roll(
                 rotatedMtx1,
                 rotatedMtx0,
-                -angleRad.x_rad(),
-                -angleRad.y_rad());
+                -rollAngleRad.x_rad(),
+                -rollAngleRad.y_rad());
         double rotatedMtx[3][3]
                 {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-        Transform3D::bypass(
+        Transform3D::pitch(
                 rotatedMtx,
-                rotatedMtx1,angleRad.x_rad(),
-                angleRad.y_rad());
+                rotatedMtx1,
+                pitchAngleRad.x_rad(),
+                pitchAngleRad.y_rad());
         double transformMtx[3][3]
         {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
         Transform3D::matrixMultiplication(
@@ -84,7 +88,7 @@ namespace jcvplot{
         double inputVector[3]{
                 point.x,
                 point.y,
-                point.z+400.0
+                point.z
         };
         //Values converted from
         //representation basis
@@ -98,17 +102,105 @@ namespace jcvplot{
             postOffsetVector,
             inputVector,
             outputVector);
-        static int prev = 0;
-        double x3 = 100.0 / (abs(outputVector[2])+0.0001);
-        static double max = 0.0;
-        static double min = 0.0;
-        max = outputVector[2] > max ? outputVector[2] : max;
-        min = outputVector[2] < min ? outputVector[2] : min;
-        if(prev != (int)x3) {
-            //printf("ZMAX=%lf, ZMIX=%lf, x3=%lf\n", max, min, x3);
-            prev = (int)x3;
+
+        outPoint.x = outputVector[0];
+        outPoint.y = outputVector[1];
+        return true;
+    }
+    bool Tensor::transformToPixelBaseCoordinateProjection(
+            cv::Point2d &outPoint,
+            const cv::Point3d &point,
+            const CvMatShape &shape,
+            const AxisAngle &yawAngleRad,
+            const cv::Point3d &offset
+    ) const {
+        //Transform the screen top Y origin
+        // to bottom Y origin
+        double yFlipMtx[3][3]{
+                1.0, 0.0, 0.0,
+                0.0,-1.0, 0.0,
+                0.0, 0.0, 1.0
+        };
+        //Transform the representation basis
+        //to pixel basis according to the
+        //desired zoom on the graph(scaling)
+        double scaleMtx[3][3]{
+                m_pixelsPerUnit.xPixels, 0.0, 0.0,
+                0.0, m_pixelsPerUnit.yPixels, 0.0,
+                0.0, 0.0, m_pixelsPerUnit.zPixels
+        };
+        double rotatedMtx0[3][3]
+                {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+        Transform3D::bypass(
+                rotatedMtx0,
+                scaleMtx,
+                yawAngleRad.x_rad(),
+                yawAngleRad.y_rad());
+        double rotatedMtx1[3][3]
+                {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+        Transform3D::bypass(
+                rotatedMtx1,
+                rotatedMtx0,
+                -yawAngleRad.x_rad(),
+                -yawAngleRad.y_rad());
+        double rotatedMtx[3][3]
+                {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+        Transform3D::bypass(
+                rotatedMtx,
+                rotatedMtx1, yawAngleRad.x_rad(),
+                yawAngleRad.y_rad());
+        double transformMtx[3][3]
+                {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+        Transform3D::matrixMultiplication(
+                transformMtx,
+                yFlipMtx,
+                rotatedMtx);
+        //Like a camera aiming a region of the graph
+        double preOffsetVector[3]{//Offset on the representation basis
+                -m_startValue.xStartValue,
+                -m_startValue.yStartValue
+                -m_startValue.zStartValue
+        };
+        auto regionHeight{
+                shape.rows() -
+                m_bound.upperLeft.y -
+                m_bound.lowerRight.y};
+        //Put the graph on inside the region desired
+        double postOffsetVector[3]{//Offset on the pixel basis
+                offset.x + m_bound.upperLeft.x,
+                offset.y + regionHeight + m_bound.upperLeft.y,
+                offset.z
+        };
+        //Values in the representation basis
+        double inputVector[3]{
+                point.x,
+                point.y,
+                point.z+400.0
+        };
+        //Values converted from
+        //representation basis
+        // to pixel basis
+        double outputVector[3]{
+                0.0, 0.0, 0.0
+        };
+        //Transform from representation basis to pixel basis
+        Transform3D::transform(transformMtx,
+                               preOffsetVector,
+                               postOffsetVector,
+                               inputVector,
+                               outputVector);
+
+        outPoint.x = 0.0;
+        outPoint.y = 0.0;
+        auto w_coordinate = outputVector[2];
+        if(w_coordinate < 1 && w_coordinate > -1){
+            return false;
         }
-        return cv::Point2d(outputVector[0]*x3,outputVector[1]*x3);
+        double focalPoint = 100.0;
+        double z_projection = 1.0;//focalPoint / w_coordinate;
+        outPoint.x = (outputVector[0]*z_projection);
+        outPoint.y = (outputVector[1]*z_projection);
+        return true;
     }
     double Tensor::minVisibleX() const{
         auto min = this->bound().upperLeft.x;
@@ -152,7 +244,8 @@ namespace jcvplot{
             std::list<double> &points,
             const CvMatShape &shape) const{
         auto horizontalUnits =
-                (shape.cols() - bound().upperLeft.x - bound().lowerRight.x) /
+                (static_cast<double>(shape.cols()) -
+                bound().upperLeft.x - bound().lowerRight.x) /
                         m_pixelsPerUnit.xPixels;
         auto horizontalPointsCount =
                 (horizontalUnits / stepValue().xStepValue) - 1.0;

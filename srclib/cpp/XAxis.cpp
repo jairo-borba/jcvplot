@@ -9,18 +9,23 @@ namespace jcvplot{
     }
     bool XAxis::render(cv::Mat &figure) const{
         auto success = true;
-        cv::Point2d zero =
-                getTensor()->transformToPixelBaseCoordinate(
-                        cv::Point3d(0.0, 0.0, 0.0),
-                        figure,
-                        axisAngle());
-        cv::Point2d tip =
-                getTensor()->transformToPixelBaseCoordinate(
-                        cv::Point3d(
-                                0.9*getTensor()->maxVisibleXValue(figure,
-                                        axisAngle()),0.0,0.0),
-                        figure,
-                        axisAngle());
+        cv::Point2d zero;
+            getTensor()->transformToPixelBaseCoordinate(
+                    zero,
+                    cv::Point3d(0.0, 0.0, 0.0),
+                    figure,
+                    yawAngle(),
+                    rollAngle(),
+                    pitchAngle());
+        cv::Point2d tip;
+            getTensor()->transformToPixelBaseCoordinate(
+                    tip,
+                    cv::Point3d(
+                        0.9*getTensor()->maxVisibleXValue(figure,yawAngle()), 0.0, 0.0),
+                    figure,
+                    yawAngle(),
+                    rollAngle(),
+                    pitchAngle());
 
         cv::line(figure,
                  zero,

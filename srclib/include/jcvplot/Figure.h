@@ -27,14 +27,20 @@ namespace jcvplot {
         FigureContainer_t m_dynamicFigures;
         float m_scale;
         Offset_t m_offset;
-        AxisAngle m_axisAngle;
+        AxisAngle m_yawAngle;
+        AxisAngle m_rollAngle;
+        AxisAngle m_pitchAngle;
         std::shared_ptr<Tensor> m_tensor;
     public:
         const std::shared_ptr<Tensor> &getTensor() const;
         const std::shared_ptr<Tensor> &tensor() const;
         void setTensor(const std::shared_ptr<Tensor> &mTensor);
-        const AxisAngle& axisAngle()const;
-        Figure &setAxisAngle(const AxisAngle&axisAngle);
+        const AxisAngle& yawAngle()const;
+        Figure &setYawAngle(const AxisAngle &yawAngle);
+        const AxisAngle& rollAngle()const;
+        Figure &setRollAngle(const AxisAngle &rollAngle);
+        const AxisAngle& pitchAngle()const;
+        Figure &setPitchAngle(const AxisAngle &pitchAngle);
     protected:
         const FigureContainer_t& figures()const;
         FigureContainer_t& figures();

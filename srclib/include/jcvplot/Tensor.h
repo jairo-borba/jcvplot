@@ -90,12 +90,22 @@ namespace jcvplot {
                         const StartValue_t &startValue,
                         const StepValue_t &stepValue,
                         const Boundaries_t &bound);
-        cv::Point2d transformToPixelBaseCoordinate(
+        bool transformToPixelBaseCoordinate(
+                cv::Point2d &outPoint,
                 const cv::Point3d &point,
                 const CvMatShape &shape,
-                const AxisAngle &angleRad = AxisAngle(),
+                const AxisAngle &yawAngleRad,
+                const AxisAngle &rollAngleRad,
+                const AxisAngle &pitchAngleRad,
                 const cv::Point3d &offset = cv::Point3d(0.0, 0.0, 0.0)
                 ) const;
+        bool transformToPixelBaseCoordinateProjection(
+                cv::Point2d &outPoint,
+                const cv::Point3d &point,
+                const CvMatShape &shape,
+                const AxisAngle &yawAngleRad = AxisAngle(),
+                const cv::Point3d &offset = cv::Point3d(0.0, 0.0, 0.0)
+        ) const;
         void genEvenYValues(std::list<double> &points, const CvMatShape &shape)const;
         void genEvenXValues(std::list<double> &points, const CvMatShape &shape)const;
         double minVisibleXValue() const;
