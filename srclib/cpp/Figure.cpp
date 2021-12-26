@@ -71,9 +71,6 @@ namespace jcvplot {
     const Figure::Offset_t &Figure::offset() const{
         return m_offset;
     }
-    const std::shared_ptr<Tensor> &Figure::getTensor() const {
-        return m_tensor;
-    }
     const std::shared_ptr<Tensor> &Figure::tensor() const {
         return m_tensor;
     }

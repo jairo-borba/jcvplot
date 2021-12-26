@@ -13,21 +13,29 @@
 #include "Figure.h"
 #include "Series.h"
 #include <memory>
+#include <list>
 namespace jcvplot {
     class MovingX : public Figure{
     private:
         std::shared_ptr<Series> m_series;
-        std::vector<Series::SeriesPoint_t> m_movingX;
-        std::vector<bool> m_positiveMove;
+        mutable std::list<Series::SeriesPoint_t> m_movingX;
+        mutable std::list<bool> m_positiveMove;
         Series::SeriesPoint_t m_iniX;
         Series::SeriesPoint_t m_maxX;
         Series::SeriesPoint_t m_stepX;
         Series::SeriesPoint_t m_currentX;
+        mutable Series::SeriesPoint_t m_curDisplacement;
+        bool m_bounceBack;
+        bool m_vanish;
+        bool m_stemMode;
     public:
         void setup(const Series::SeriesPoint_t &iniX,
                 const Series::SeriesPoint_t &maxX,
-                const Series::SeriesPoint_t &stepXs);
-        void step();
+                const Series::SeriesPoint_t &stepXs,
+                bool bounceBack = false,
+                bool vanish = false,
+                bool stemMode = false);
+        int step();
         void init();
         bool render(cv::Mat &figure) const override;
         MovingX &setSeries(std::shared_ptr<Series> &series);

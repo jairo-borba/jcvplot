@@ -10,7 +10,7 @@ namespace jcvplot{
     bool XAxis::render(cv::Mat &figure) const{
         auto success = true;
         cv::Point2d zero;
-            getTensor()->transformToPixelBaseCoordinate(
+            tensor()->transformToPixelBaseCoordinate(
                     zero,
                     cv::Point3d(0.0, 0.0, 0.0),
                     figure,
@@ -18,10 +18,10 @@ namespace jcvplot{
                     rollAngle(),
                     pitchAngle());
         cv::Point2d tip;
-            getTensor()->transformToPixelBaseCoordinate(
+            tensor()->transformToPixelBaseCoordinate(
                     tip,
                     cv::Point3d(
-                        0.9*getTensor()->maxVisibleXValue(figure,yawAngle()), 0.0, 0.0),
+                        0.9*tensor()->maxVisibleXValue(figure,yawAngle()), 0.0, 0.0),
                     figure,
                     yawAngle(),
                     rollAngle(),

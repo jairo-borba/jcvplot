@@ -32,7 +32,6 @@ namespace jcvplot {
         AxisAngle m_pitchAngle;
         std::shared_ptr<Tensor> m_tensor;
     public:
-        const std::shared_ptr<Tensor> &getTensor() const;
         const std::shared_ptr<Tensor> &tensor() const;
         void setTensor(const std::shared_ptr<Tensor> &mTensor);
         const AxisAngle& yawAngle()const;

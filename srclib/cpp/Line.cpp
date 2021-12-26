@@ -9,10 +9,10 @@ namespace jcvplot{
         auto firstIteration = true;
         auto prevRet = false;
         cv::Point2d previousPoint;
-        for( auto v : m_series->series()){
+        for( auto v : m_series->list()){
             if(firstIteration){
                 firstIteration = false;
-                prevRet = getTensor()->transformToPixelBaseCoordinate(
+                prevRet = tensor()->transformToPixelBaseCoordinate(
                         previousPoint,
                         cv::Point3d(v.first, v.second,0.0),
                         figure,
@@ -22,7 +22,7 @@ namespace jcvplot{
                 continue;
             }
             cv::Point2d point;
-            auto retPoint = getTensor()->transformToPixelBaseCoordinate(
+            auto retPoint = tensor()->transformToPixelBaseCoordinate(
                     point,
                     cv::Point3d(
                                     v.first,

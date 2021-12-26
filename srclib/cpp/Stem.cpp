@@ -5,9 +5,9 @@
 namespace jcvplot{
     bool Stem::render(cv::Mat &figure) const{
         auto success = true;
-        for( auto v : m_series->series()){
+        for( auto v : m_series->list()){
             cv::Point2d point;
-            auto ret = getTensor()->transformToPixelBaseCoordinate(
+            auto ret = tensor()->transformToPixelBaseCoordinate(
                     point,
                     cv::Point3d(v.first, v.second, 0.0),
                     figure,
@@ -21,7 +21,7 @@ namespace jcvplot{
                         4,
                         scalarColor());
             cv::Point2d pointZeroY;
-                    getTensor()->transformToPixelBaseCoordinate(
+                    tensor()->transformToPixelBaseCoordinate(
                             pointZeroY,
                             cv::Point3d(v.first, 0.0, 0.0),
                             figure,

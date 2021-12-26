@@ -9,6 +9,7 @@
 #include "jcvplot/Tensor.h"
 #include "jcvplot/AxisAngle.h"
 #include "jcvplot/MovingX.h"
+#include "jcvplot/SinusoidGenerator.h"
 void setupAxis(
         jcvplot::Form &form,
         std::shared_ptr<jcvplot::Figure> axis,
@@ -23,30 +24,10 @@ void setTensor2(std::shared_ptr<jcvplot::Tensor> tensor){
     jcvplot::Tensor::Boundaries_t bound{
             cv::Point2d(100,50),
             cv::Point2d(100,50)};
-    jcvplot::Tensor::PixelsPerUnit_t pixelsPerUnit{50.0,50.0};
+    jcvplot::Tensor::PixelsPerUnit_t pixelsPerUnit{5000.0,50.0};
     jcvplot::Tensor::StartValue_t startValue{0.0,-2.0};
     jcvplot::Tensor::StepValue_t stepValue{2,2};
     tensor->setData(pixelsPerUnit,startValue,stepValue,bound);
-}
-void goSeries(
-        std::vector<double> &xv,
-        std::vector<double> &yv,
-        double x_ini,
-        double x_step,
-        double x_max,
-        double x_phase,
-        double freq,
-        double (*func)(double)){
-
-    int count = static_cast<int>((x_max - x_ini) / x_step) + 1;
-    xv.resize(count);
-    yv.resize(count);
-    size_t idx = 0;
-    for( auto x  = x_ini; x <= x_max; x += x_step ){
-        xv[idx] = x;
-        yv[idx] = func(freq*x+x_phase);
-        idx++;
-    }
 }
 
 int main() {
@@ -59,8 +40,11 @@ int main() {
     std::shared_ptr<jcvplot::Stem> stem = std::make_shared<jcvplot::Stem>();
     std::shared_ptr<jcvplot::Line> line = std::make_shared<jcvplot::Line>();
     std::shared_ptr<jcvplot::MovingX> mov = std::make_shared<jcvplot::MovingX>();
-    std::shared_ptr<jcvplot::Series> series = std::make_shared<jcvplot::Series>();
     std::shared_ptr<jcvplot::Tensor> tensor = std::make_shared<jcvplot::Tensor>();
+
+    jcvplot::SinusoidGenerator signal(100,4000);
+    std::shared_ptr<jcvplot::Series> series = signal.signalPtr();
+    signal.generate(40.0);
     setTensor2(tensor);
     x_axis->setTensor(tensor);
     y_axis->setTensor(tensor);
@@ -74,7 +58,7 @@ int main() {
 
     std::vector<double> xv;
     std::vector<double> yv;
-    double x_phase = 0.0;
+    double x_phase = 1.2;
 
     series->setSeriesData(xv,yv);
     stem->setSeries(series);
@@ -86,6 +70,7 @@ int main() {
                     20,
                     20));
     ruler->enableHorizontalGrid().enableVerticalGrid();
+
     auto x_axisAngle = acos(-1)*0.0;
     auto y_axisAngle = -acos(-1)*0.0;
     ruler->setYawAngle(
@@ -115,6 +100,8 @@ int main() {
                       0.0,
                       0.0,
                       0.0));
+    mov->setup(-2*acos(-1),8.0,0.1,false,true);
+    mov->init();
     form.setColor(jcvplot::Figure::Color_t(200,200,200));
     form.init(700,1400);
     form.renderAll();
@@ -123,29 +110,22 @@ int main() {
     cv::waitKey(0);
     auto max = 200;
     auto freq = 0.8;
-    goSeries(
-            xv,
-            yv,
-            0.0,
-            0.25,
-            2*acos(-1)/freq,
-            x_phase, freq, sin);
-    series->setSeriesData(xv,yv);
-    mov->setup(-2*acos(-1),4.0,0.1);
-    mov->init();
-    for(int a = 0; a <= max; a++)
+    auto x_ini = 0.0;
+    auto running = true;
+    for(int a = 0; running; a++)
     {
         auto x_axisAngle = 0.0*2.0*0.5*acos(-1) * static_cast<double>(a)/static_cast<double>(max);
         auto y_axisAngle = 0.0*2.0*0.5*acos(-1) * static_cast<double>(a)/static_cast<double>(max);
         //x_axisAngle = 0.5*acos(-1);
         //y_axisAngle = 0.5*acos(-1);
         auto z_axisAngle = y_axisAngle;
-        //printf("x_axisAngle=%lf\n", x_axisAngle);
         //goSeries(xv,yv,0.0,0.5,2*acos(-1), x_phase, sin);
-
         x_phase += 0.0;//0.3;
-        //series->clear();
         mov->step();
+        if(series->size() < signal.secondsToSampleCount(3.0)){
+            signal.generate(4.0);
+            mov->init();
+        }
         ruler->setYawAngle(
                 jcvplot::AxisAngle(
                         x_axisAngle,
@@ -164,15 +144,33 @@ int main() {
         y_axis->setYawAngle(jcvplot::AxisAngle(x_axisAngle,y_axisAngle,z_axisAngle));
         form.renderDynamic();
         cv::imshow("JCVPlot", form.anime());
-        if( cv::waitKey(20.0) == 'w'){
-            for(;;){
-                if(cv::waitKey(50.0) == 'c')
-                    break;
-            }
+
+        char key = cv::waitKey(20.0);
+        switch(key)
+        {
+            case 's':
+                signal.setSamplingFrequency(signal.samplingFrequency()+1.0);
+                break;
+            case 'a':
+                signal.setSamplingFrequency(signal.samplingFrequency()-1.0);
+                break;
+            case 'f':
+                signal.setFrequency(signal.frequency()+1.0);
+                break;
+            case 'd':
+                signal.setFrequency(signal.frequency()-1.0);
+                break;
+            case 'w':
+                for(;;){
+                    if(cv::waitKey(50.0) == 'c')
+                        break;
+                }
+                break;
+            case 'q':
+                running = false;
+                break;
         }
-        if( cv::waitKey(20) == 'q')
-            break;
     }
-    cv::waitKey(0);
+    cv::waitKey(20.0);
     return 0;
 }
