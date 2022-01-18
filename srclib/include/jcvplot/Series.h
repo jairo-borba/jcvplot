@@ -1,39 +1,35 @@
 // Created by Jairo Borba on 11/1/21.
 #ifndef JCVPLOT_SERIES_H
 #define JCVPLOT_SERIES_H
-#include <opencv2/opencv.hpp>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/core.hpp>
-#include <opencv2/imgcodecs.hpp>
 #include <vector>
 #include <list>
+#include <functional>
 namespace jcvplot {
-    class Series {
+    template<class T> class Series {
     public:
-        typedef double SeriesPoint_t;
-        typedef std::list<std::pair<SeriesPoint_t,SeriesPoint_t>> Series_t;
+        using SeriesCoord_t = T;
+        using SeriesPoint_t = std::pair<SeriesCoord_t,SeriesCoord_t>;
+        using Series_t = std::list<SeriesPoint_t>;
     private:
         Series_t m_series;
+        std::function<void(std::pair<T,T>&)> m_loadFunction;
     public:
-        bool setSeriesData(
-                const std::vector<SeriesPoint_t> &x_data,
-                const std::vector<SeriesPoint_t> &y_data);
-        bool setSeriesData(
-                const std::vector<SeriesPoint_t> &y_data,
-                SeriesPoint_t x_step = 1.0,
-                SeriesPoint_t x_start = 0.0);
-        void clear();
-        Series_t::const_iterator begin() const;
-        Series_t::const_iterator end() const;
-        Series_t::iterator begin();
-        Series_t::iterator end();
-        const Series_t &list() const;
-        Series_t &list();
-        void erase(Series_t::iterator &it);
-        size_t size() const;
+        void setLoadFunction(const std::function<void(std::pair<T,T>&)> &loadFunction){
+            m_loadFunction = std::move(loadFunction);
+        }
+        void load(size_t count){
+            auto coord = std::make_pair(0.,0.);
+            for(auto i = 0; i < count; ++i) {
+                m_loadFunction(coord);
+                m_series.push_back(coord);
+            }
+        }
+        const Series_t &list() const{
+            return m_series;
+        }
+        Series_t &list(){
+            return m_series;
+        }
     };
-
-    typedef Series::Series_t::const_iterator series_const_it;
-    typedef Series::Series_t::iterator series_it;
 }
 #endif //JCVPLOT_SERIES_H

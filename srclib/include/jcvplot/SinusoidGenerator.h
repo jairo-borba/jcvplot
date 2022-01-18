@@ -1,45 +1,50 @@
 //
 // Created by Jairo Borba on 12/23/21.
 //
-
 #ifndef JCVPLOT_SINUSOIDGENERATOR_H
 #define JCVPLOT_SINUSOIDGENERATOR_H
-#include "Series.h"
+#include <functional>
+#include <cmath>
 namespace jcvplot {
-    class SinusoidGenerator {
-    private:
-        double m_currentPhase;
-        double m_samplingFrequency;
-        double m_frequency;
-        double (*m_func)(double);
-        std::shared_ptr<jcvplot::Series> m_seriesPtr;
+    template<class T, class func_t = std::function<T(T)>> class SinusoidGenerator {
     public:
-        static const double defaultFrequencyHz;
-        static const double defaultSamplingFrequencyHz;
-        static double (*defaultFunction)(double);
-        SinusoidGenerator(double initialPhase = 0.0);
+        double _initialPhase;
+        double _currentPhase;
+        double _samplingFrequency;
+        double _frequency;
+        func_t _fnc_calc;
+        SinusoidGenerator()=default;
+        SinusoidGenerator(const SinusoidGenerator&)=default;
+        SinusoidGenerator(SinusoidGenerator&)=default;
+        SinusoidGenerator(SinusoidGenerator&&)=default;
         SinusoidGenerator(
-                double frequency,
+                double startPhase,
                 double samplingFrequency,
-                double initialPhase = 0.0);
-        SinusoidGenerator(
                 double frequency,
-                double samplingFrequency,
-                double (*func)(double),
-                double initialPhase = 0.0);
-        SinusoidGenerator &setSamplingFrequency(double samplingFrequencyHz);
-        SinusoidGenerator &setFrequency(double frequencyHz);
-        SinusoidGenerator &setFunction(double (*func)(double));
-        double samplingFrequency()const;
-        double frequency()const;
-        size_t secondsToSampleCount(double seconds);
-        void generate(double startTime, double periodLength);
-        void generate(double periodLength);
-        void generate(jcvplot::Series &series, double periodLength);
-        std::shared_ptr<jcvplot::Series> signalPtr();
-        jcvplot::Series &operator()();
-        const jcvplot::Series &operator()() const;
+                func_t fnc_calc = [](T input)->T{return sin(input);}):
+                _initialPhase(startPhase),
+                _currentPhase(startPhase),
+                _samplingFrequency(samplingFrequency),
+                _frequency(frequency),
+                _fnc_calc(fnc_calc){
+        }
+        void reset(){
+            _currentPhase = _initialPhase;
+        }
+        void operator()(std::pair<T,T> &coordinate) {
+            static auto pi = acos(-1.0);
+            static auto circleRad = 2.0 * pi;
+            auto deltaTime = 1.0 / _samplingFrequency;
+            auto periodRad = _frequency * circleRad;
+            auto y = _fnc_calc(_currentPhase * periodRad);
+            _currentPhase += deltaTime;
+            coordinate.first = _currentPhase;
+            coordinate.second = y;
+        }
+    };
+    double operator "" _msecs(long double mSeconds){
+        auto samplesCount = static_cast<double>(mSeconds/1000.0);
+        return samplesCount;
     };
 }
-
 #endif //JCVPLOT_SINUSOIDGENERATOR_H

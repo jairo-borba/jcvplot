@@ -37,7 +37,7 @@ namespace jcvplot{
         }
         return success;
     }
-    Stem &Stem::setSeries(std::shared_ptr<Series> &series){
+    Stem &Stem::setSeries(std::shared_ptr<Series<double>> &series){
         m_series = series;
         return *this;
     }

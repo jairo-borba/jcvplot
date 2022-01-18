@@ -15,10 +15,10 @@
 namespace jcvplot{
     class Stem : public Figure{
     private:
-        std::shared_ptr<Series> m_series;
+        std::shared_ptr<Series<double>> m_series;
     public:
         bool render(cv::Mat &figure) const override;
-        Stem &setSeries(std::shared_ptr<Series> &series);
+        Stem &setSeries(std::shared_ptr<Series<double>> &series);
     };
 }
 

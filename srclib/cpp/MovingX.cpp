@@ -4,9 +4,9 @@
 #include "MovingX.h"
 namespace jcvplot {
     void MovingX::setup(
-            const Series::SeriesPoint_t &iniX,
-            const Series::SeriesPoint_t &maxX,
-            const Series::SeriesPoint_t &stepX,
+            const Series<double>::SeriesCoord_t &iniX,
+            const Series<double>::SeriesCoord_t &maxX,
+            const Series<double>::SeriesCoord_t &stepX,
             bool bounceBack,
             bool vanish,
             bool stemMode){
@@ -65,7 +65,7 @@ namespace jcvplot {
         return replaceQty;
     }
     void MovingX::init(){
-        size_t seriesSize = m_series->size();
+        size_t seriesSize = m_series->list().size();
         m_positiveMove.resize(seriesSize, true);
         m_movingX.clear();
         for( auto v : m_series->list()){
@@ -77,11 +77,11 @@ namespace jcvplot {
         auto success = true;
         auto firstIteration = true;
         cv::Point2d previousPoint;
-        if(m_series->size() != m_movingX.size())
+        if(m_series->list().size() != m_movingX.size())
             return false;
         auto mvx_it = m_movingX.begin();
         auto pmv_it = m_positiveMove.begin();
-        for(auto vit = m_series->begin(); vit != m_series->end();){
+        for(auto vit = m_series->list().begin(); vit != m_series->list().end();){
             auto &mvx = *mvx_it;
             auto &pmv = *pmv_it;
             auto y = vit->second;
@@ -108,14 +108,18 @@ namespace jcvplot {
                     firstIteration = false;
                 }
                 else {
-                    cv::line(
-                            figure,
-                            previousPoint,
-                            point,
-                            scalarColor());
+                    if(!m_stemMode) {
+                        cv::line(
+                                figure,
+                                previousPoint,
+                                point,
+                                color);
+                    }
                 }
                 previousPoint = point;
-                //cv::circle(figure,point,4,color);
+                if(m_stemMode) {
+                    cv::circle(figure, point, 4, color);
+                }
                 ++vit;
                 ++mvx_it;
                 ++pmv_it;
@@ -124,14 +128,14 @@ namespace jcvplot {
                 auto vit_del = vit++;
                 auto mvx_it_del = mvx_it++;
                 auto pmv_it_del = pmv_it++;
-                m_series->erase(vit_del);
+                m_series->list().erase(vit_del);
                 m_movingX.erase(mvx_it_del);
                 m_positiveMove.erase(pmv_it_del);
             }
         }
         return success;
     }
-    MovingX &MovingX::setSeries(std::shared_ptr<Series> &series){
+    MovingX &MovingX::setSeries(std::shared_ptr<Series<double>> &series){
         m_series = series;
         return *this;
     }

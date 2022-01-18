@@ -11,7 +11,6 @@ namespace jcvplot {
             m_offset(0,0,0),
             m_yawAngle(){
     }
-
     Figure& Figure::setID(const ID &id){
         m_id = id;
         return *this;

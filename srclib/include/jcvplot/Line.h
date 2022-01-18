@@ -15,7 +15,7 @@
 namespace jcvplot{
     class Line : public Figure{
     private:
-        std::shared_ptr<Series> m_series;
+        std::shared_ptr<Series<double>> m_series;
         double m_pixelXValue;
         double m_pixelYValue;
     public:
@@ -24,7 +24,7 @@ namespace jcvplot{
         double getPixelXValue() const;
         void setPixelXValue(double pixelXValue);
         bool render(cv::Mat &figure) const override;
-        Line &setSeries(std::shared_ptr<Series> &series);
+        Line &setSeries(std::shared_ptr<Series<double>> &series);
 
     };
 }

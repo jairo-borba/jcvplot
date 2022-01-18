@@ -11,6 +11,7 @@ CMakeFiles/JcvTest.dir/main.cpp.o: \
  ../../srclib/include/jcvplot/MovingX.h \
  ../../srclib/include/jcvplot/Ruler.h \
  ../../srclib/include/jcvplot/Series.h \
+ ../../srclib/include/jcvplot/SinusoidGenerator.h \
  ../../srclib/include/jcvplot/Stem.h \
  ../../srclib/include/jcvplot/Tensor.h \
  ../../srclib/include/jcvplot/XAxis.h \

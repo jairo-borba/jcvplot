@@ -1,7 +1,6 @@
 //
 // Created by Jairo Borba on 11/2/21.
 //
-
 #include "../include/jcvplot/Line.h"
 namespace jcvplot{
     bool Line::render(cv::Mat &figure) const{
@@ -9,7 +8,7 @@ namespace jcvplot{
         auto firstIteration = true;
         auto prevRet = false;
         cv::Point2d previousPoint;
-        for( auto v : m_series->list()){
+        for(auto v : m_series->list()){
             if(firstIteration){
                 firstIteration = false;
                 prevRet = tensor()->transformToPixelBaseCoordinate(
@@ -43,7 +42,7 @@ namespace jcvplot{
         }
         return success;
     }
-    Line &Line::setSeries(std::shared_ptr<Series> &series){
+    Line &Line::setSeries(std::shared_ptr<Series<double>> &series){
         m_series = series;
         return *this;
     }

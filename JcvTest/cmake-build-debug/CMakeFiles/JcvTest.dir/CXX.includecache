@@ -89,6 +89,8 @@ Series.h
 ../../srclib/include/jcvplot/Series.h
 memory
 -
+list
+-
 
 ../../srclib/include/jcvplot/Ruler.h
 opencv2/opencv.hpp
@@ -105,15 +107,17 @@ Figure.h
 ../../srclib/include/jcvplot/Figure.h
 
 ../../srclib/include/jcvplot/Series.h
-opencv2/opencv.hpp
--
-opencv2/imgproc.hpp
--
-opencv2/core.hpp
--
-opencv2/imgcodecs.hpp
--
 vector
+-
+list
+-
+functional
+-
+
+../../srclib/include/jcvplot/SinusoidGenerator.h
+functional
+-
+cmath
 -
 
 ../../srclib/include/jcvplot/Stem.h
@@ -137,7 +141,7 @@ memory
 ../../srclib/include/jcvplot/Tensor.h
 opencv2/opencv.hpp
 -
-list
+queue
 -
 AxisAngle.h
 ../../srclib/include/jcvplot/AxisAngle.h
@@ -189,6 +193,10 @@ jcvplot/AxisAngle.h
 /Users/jairoborba/CLionProjects/jcvplot/JcvTest/jcvplot/AxisAngle.h
 jcvplot/MovingX.h
 /Users/jairoborba/CLionProjects/jcvplot/JcvTest/jcvplot/MovingX.h
+jcvplot/SinusoidGenerator.h
+/Users/jairoborba/CLionProjects/jcvplot/JcvTest/jcvplot/SinusoidGenerator.h
+math.h
+-
 
 /usr/local/Cellar/opencv/4.5.3_2/include/opencv4/opencv2/calib3d.hpp
 opencv2/core.hpp
@@ -1147,7 +1155,7 @@ util_inl.hpp
 /usr/local/Cellar/opencv/4.5.3_2/include/opencv4/opencv2/stitching/detail/util_inl.hpp
 
 /usr/local/Cellar/opencv/4.5.3_2/include/opencv4/opencv2/stitching/detail/util_inl.hpp
-queue
+list
 -
 opencv2/core.hpp
 /usr/local/Cellar/opencv/4.5.3_2/include/opencv4/opencv2/stitching/detail/opencv2/core.hpp
